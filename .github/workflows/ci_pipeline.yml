@@ -1,0 +1,31 @@
+name: PySpark CI Pipeline
+
+# Trigger this workflow whenever a PR is opened against dev or main
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        # We install pytest for running tests, and pyspark to run our logic locally
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyspark==3.4.1
+
+      - name: Run PySpark Unit Tests
+        run: |
+          pytest tests/

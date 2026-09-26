@@ -29,6 +29,9 @@ df_bronze = spark.read.json(s3_bronze_path)
 # 5. Transform to Silver (Clean data types, filter out anomalies)
 df_silver = clean_bronze_data(df_bronze)
 
-# 6. Display results
-print(f"Total valid events processed: {df_silver.count()}")
-df_silver.display()
+# 6. Write to Silver layer in Delta format
+s3_silver_path = "s3://streamshop-raw-bronze/ecommerce/silver/"
+print(f"Writing Silver data to: {s3_silver_path}")
+    
+# Delta format adds ACID transactions and time-travel to our data lake
+df_silver.write.format("delta").mode("append").save(s3_silver_path)

@@ -4,8 +4,8 @@ from delta.tables import DeltaTable
 
 # 1. Initialize Spark
 spark = SparkSession.builder.appName("StreamShop-SilverToGold").getOrCreate()
-# Add this spark.conf because athena still using obsolete protocol delta table
-spark.conf.set("spark.databricks.delta.properties.defaults.enableDeletionVectors", "false")
+# Add this spark.conf if using cluster because athena still using obsolete protocol delta table
+# spark.conf.set("spark.databricks.delta.properties.defaults.enableDeletionVectors", "false")
 
 # 2. AWS Credentials
 #access_key = dbutils.secrets.get(scope="aws-auth", key="access-key")

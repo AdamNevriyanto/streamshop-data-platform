@@ -1,6 +1,7 @@
 import pytest
+import datetime
 from pyspark.sql import SparkSession
-from scripts.utils.transformers import clean_bronze_data
+from scripts.utils.transformers import clean_bronze_data, aggregate_platform_revenue
 
 # Create a local Spark session for testing
 @pytest.fixture(scope="session")

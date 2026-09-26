@@ -30,5 +30,20 @@ df_silver = spark.read.format("delta").load(s3_silver_path)
 df_gold = aggregate_platform_revenue(df_silver)
 
 # 6. Write to Gold layer (Overwrite because it's a daily aggregate)
-print(f"Writing Gold data to: {s3_gold_path}")
-df_gold.write.format("delta").mode("overwrite").save(s3_gold_path)
+#print(f"Writing Gold data to: {s3_gold_path}")
+#df_gold.write.format("delta").mode("overwrite").save(s3_gold_path)
+
+# Because Athena using obsolete delta type table that not compatible with newer delta table databricks
+# So when write to s3 must be downgraded
+
+# 6. Write to Gold layer (Athena-Compatible Version)
+# We create a new folder to ensure a fresh table initialization
+s3_gold_athena_path = "s3://streamshop-raw-bronze/ecommerce/gold/platform_revenue_athena/"
+print(f"Writing Gold data to: {s3_gold_athena_path}")
+
+df_gold.write.format("delta") \
+    .mode("overwrite") \
+    .option("delta.columnMapping.mode", "none") \
+    .option("delta.minReaderVersion", "2") \
+    .option("delta.minWriterVersion", "5") \
+    .save(s3_gold_athena_path)

@@ -9,7 +9,7 @@ spark = SparkSession.builder.appName("StreamShop-BronzeToSilver").getOrCreate()
 # secret_key = dbutils.secrets.get(scope="aws-auth", key="secret-key")
 
 # 3. Configure Hadoop/Spark to talk to AWS S3 securely
-sc = spark.sparkContext
+# sc = spark.sparkContext
 # sc._jsc.hadoopConfiguration().set("fs.s3a.access.key", access_key)
 # sc._jsc.hadoopConfiguration().set("fs.s3a.secret.key", secret_key)
 # sc._jsc.hadoopConfiguration().set("fs.s3a.endpoint", "s3.ap-southeast-3.amazonaws.com")

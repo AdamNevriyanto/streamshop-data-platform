@@ -53,7 +53,7 @@ df_gold = aggregate_platform_revenue(df_silver)
 # Because we are using serverless and athena cannow handle delta table in databricks
 # So need to read with legacy properties
 
-s3_gold_athena_path = "s3://streamshop-raw-bronze/ecommerce/gold/platform_revenue_athena_serverless/"
+s3_gold_athena_path = "s3://streamshop-raw-bronze/ecommerce/gold/platform_revenue_athena_serverless"
 
 # 1. Force table initialization with strict legacy properties
 (DeltaTable.createIfNotExists(spark)

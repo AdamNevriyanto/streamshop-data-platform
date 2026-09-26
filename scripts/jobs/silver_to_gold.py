@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 from scripts.utils.transformers import aggregate_platform_revenue
+from delta.tables import DeltaTable
 
 # 1. Initialize Spark
 spark = SparkSession.builder.appName("StreamShop-SilverToGold").getOrCreate()
@@ -38,12 +39,30 @@ df_gold = aggregate_platform_revenue(df_silver)
 
 # 6. Write to Gold layer (Athena-Compatible Version)
 # We create a new folder to ensure a fresh table initialization
-s3_gold_athena_path = "s3://streamshop-raw-bronze/ecommerce/gold/platform_revenue_athena/"
-print(f"Writing Gold data to: {s3_gold_athena_path}")
+# s3_gold_athena_path = "s3://streamshop-raw-bronze/ecommerce/gold/platform_revenue_athena/"
+# print(f"Writing Gold data to: {s3_gold_athena_path}")
 
-df_gold.write.format("delta") \
-    .mode("overwrite") \
-    .option("delta.columnMapping.mode", "none") \
-    .option("delta.minReaderVersion", "2") \
-    .option("delta.minWriterVersion", "5") \
-    .save(s3_gold_athena_path)
+# df_gold.write.format("delta") \
+#     .mode("overwrite") \
+#     .option("delta.columnMapping.mode", "none") \
+#     .option("delta.minReaderVersion", "2") \
+#     .option("delta.minWriterVersion", "5") \
+#     .save(s3_gold_athena_path)
+
+
+# Because we are using serverless and athena cannow handle delta table in databricks
+# So need to read with legacy properties
+
+s3_gold_athena_path = "s3a://streamshop-raw-bronze/ecommerce/gold/platform_revenue_athena_serverless/"
+
+# 1. Force table initialization with strict legacy properties
+(DeltaTable.createIfNotExists(spark)
+    .location(s3_gold_athena_path)
+    .addColumns(df_gold.schema)
+    .property("delta.columnMapping.mode", "none")
+    .property("delta.minReaderVersion", "1")
+    .property("delta.minWriterVersion", "2")
+    .execute())
+
+# 2. Write the dataframe into the locked-down table
+df_gold.write.format("delta").mode("overwrite").save(s3_gold_athena_path)

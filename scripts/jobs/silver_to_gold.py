@@ -4,6 +4,8 @@ from delta.tables import DeltaTable
 
 # 1. Initialize Spark
 spark = SparkSession.builder.appName("StreamShop-SilverToGold").getOrCreate()
+# Add this spark.conf because athena still using obsolete protocol delta table
+spark.conf.set("spark.databricks.delta.properties.defaults.enableDeletionVectors", "false")
 
 # 2. AWS Credentials
 #access_key = dbutils.secrets.get(scope="aws-auth", key="access-key")
@@ -62,6 +64,7 @@ s3_gold_athena_path = "s3://streamshop-raw-bronze/ecommerce/gold/platform_revenu
     .property("delta.columnMapping.mode", "none")
     .property("delta.minReaderVersion", "1")
     .property("delta.minWriterVersion", "2")
+    .property("delta.enableDeletionVectors", "false")
     .execute())
 
 # 2. Write the dataframe into the locked-down table

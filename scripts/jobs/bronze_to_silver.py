@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, to_timestamp
+
+# Add modular function transformer.py
+from scripts.utils.transformer import clean_bronze_data
 
 # 1. Initialize Spark Session
 spark = SparkSession.builder.appName("StreamShop-BronzeToSilver").getOrCreate()
@@ -25,8 +27,7 @@ print(f"Reading raw data from: {s3_bronze_path}")
 df_bronze = spark.read.json(s3_bronze_path)
 
 # 5. Transform to Silver (Clean data types, filter out anomalies)
-df_silver = df_bronze.withColumn("event_time", to_timestamp(col("event_time"))) \
-                     .filter(col("amount") >= 0)
+df_silver = clean_bronze_data(df_bronze)
 
 # 6. Display results
 print(f"Total valid events processed: {df_silver.count()}")

@@ -27,5 +27,7 @@ jobs:
           pip install pytest pyspark==3.4.1
 
       - name: Run PySpark Unit Tests
+        env:
+          PYTHONPATH: .
         run: |
           pytest tests/

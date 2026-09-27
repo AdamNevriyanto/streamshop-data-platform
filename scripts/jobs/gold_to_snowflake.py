@@ -7,7 +7,13 @@ spark = SparkSession.builder.appName("StreamShop-GoldToSnowflake").getOrCreate()
 sf_url = dbutils.secrets.get(scope="aws-auth", key="snowflake-url")
 sf_user = dbutils.secrets.get(scope="aws-auth", key="snowflake-user")
 #sf_password = dbutils.secrets.get(scope="aws-auth", key="snowflake-password")
-sf_private_key = dbutils.secrets.get(scope="aws-auth", key="snowflake-private-key")
+raw_private_key = dbutils.secrets.get(scope="aws-auth", key="snowflake-private-key")
+
+sf_private_key = raw_private_key.replace("-----BEGIN PRIVATE KEY-----", "") \
+                                .replace("-----END PRIVATE KEY-----", "") \
+                                .replace("\n", "") \
+                                .replace("\r", "") \
+                                .strip()
 
 # Configure Snowflake Connection Options
 # sf_options = {
@@ -24,7 +30,7 @@ sf_private_key = dbutils.secrets.get(scope="aws-auth", key="snowflake-private-ke
 sf_options = {
   "host": sf_url,
   "sfuser": sf_user,
-  "sfpassword": sf_private_key,
+  "pem_private_key": sf_private_key,
   "sfdatabase": "STREAMSHOP_DB",
   "sfschema": "ANALYTICS",
   "sfwarehouse": "STREAMSHOP_WH",

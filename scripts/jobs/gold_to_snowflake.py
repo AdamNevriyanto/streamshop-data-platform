@@ -6,7 +6,8 @@ spark = SparkSession.builder.appName("StreamShop-GoldToSnowflake").getOrCreate()
 # 2. Fetch Credentials from Databricks Secret Scope
 sf_url = dbutils.secrets.get(scope="aws-auth", key="snowflake-url")
 sf_user = dbutils.secrets.get(scope="aws-auth", key="snowflake-user")
-sf_password = dbutils.secrets.get(scope="aws-auth", key="snowflake-password")
+#sf_password = dbutils.secrets.get(scope="aws-auth", key="snowflake-password")
+sf_private_key = dbutils.secrets.get(scope="aws-auth", key="snowflake-private-key")
 
 # Configure Snowflake Connection Options
 # sf_options = {
@@ -15,17 +16,19 @@ sf_password = dbutils.secrets.get(scope="aws-auth", key="snowflake-password")
 #   "sfPassword": sf_password,
 #   "sfDatabase": "STREAMSHOP_DB",
 #   "sfSchema": "ANALYTICS",
-#   "sfWarehouse": "STREAMSHOP_WH"
+#   "sfWarehouse": "STREAMSHOP_WH",
+#   "sfRole": "STREAMSHOP_ETL_ROLE"
 # }
 
 # Configure Snowflake Connection Options (serverless-compatible)
 sf_options = {
   "host": sf_url,
   "sfuser": sf_user,
-  "sfpassword": sf_password,
+  "sfpassword": sf_private_key,
   "sfdatabase": "STREAMSHOP_DB",
   "sfschema": "ANALYTICS",
-  "sfwarehouse": "STREAMSHOP_WH"
+  "sfwarehouse": "STREAMSHOP_WH",
+  "sfRole": "STREAMSHOP_ETL_ROLE"
 }
 
 # 3. Read Gold Data from S3

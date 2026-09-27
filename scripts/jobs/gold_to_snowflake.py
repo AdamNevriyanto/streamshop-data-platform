@@ -9,13 +9,23 @@ sf_user = dbutils.secrets.get(scope="aws-auth", key="snowflake-user")
 sf_password = dbutils.secrets.get(scope="aws-auth", key="snowflake-password")
 
 # Configure Snowflake Connection Options
+# sf_options = {
+#   "sfUrl": sf_url,
+#   "sfUser": sf_user,
+#   "sfPassword": sf_password,
+#   "sfDatabase": "STREAMSHOP_DB",
+#   "sfSchema": "ANALYTICS",
+#   "sfWarehouse": "STREAMSHOP_WH"
+# }
+
+# Configure Snowflake Connection Options (serverless-compatible)
 sf_options = {
-  "sfUrl": sf_url,
-  "sfUser": sf_user,
-  "sfPassword": sf_password,
-  "sfDatabase": "STREAMSHOP_DB",
-  "sfSchema": "ANALYTICS",
-  "sfWarehouse": "STREAMSHOP_WH"
+  "host": sf_url,
+  "sfuser": sf_user,
+  "sfpassword": sf_password,
+  "sfdatabase": "STREAMSHOP_DB",
+  "sfschema": "ANALYTICS",
+  "sfwarehouse": "STREAMSHOP_WH"
 }
 
 # 3. Read Gold Data from S3

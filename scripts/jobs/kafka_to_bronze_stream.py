@@ -35,8 +35,14 @@ checkpoint_path = "s3://streamshop-raw-bronze/ecommerce/bronze/checkpoints/strea
 
 print(f"Writing stream to {s3_bronze_streaming_path}")
 
+# Write the Stream to the Bronze Layer with a Serverless Trigger
 streaming_query = df_bronze.writeStream \
     .format("delta") \
     .outputMode("append") \
     .option("checkpointLocation", checkpoint_path) \
+    .trigger(availableNow=True) \
     .start(s3_bronze_streaming_path)
+
+# You must add this line when using availableNow so the cluster knows to shut down
+# after the micro-batch finishes processing, rather than hanging open.
+streaming_query.awaitTermination()

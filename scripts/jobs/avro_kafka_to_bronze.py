@@ -34,7 +34,7 @@ df_kafka = spark.readStream \
     .option("subscribe", "ecommerce_transactions_avro") \
     .option("kafka.security.protocol", "SASL_SSL") \
     .option("kafka.sasl.mechanism", "PLAIN") \
-    .option("kafka.sasl.jaas.config", f"org.apache.kafka.common.security.plain.PlainLoginModule required username='{kafka_key}' password='{kafka_secret}';") \
+    .option("kafka.sasl.jaas.config", f"kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule required username='{kafka_key}' password='{kafka_secret}';") \
     .option("startingOffsets", "earliest") \
     .load()
 
